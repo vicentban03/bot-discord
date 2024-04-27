@@ -1,21 +1,32 @@
-import random
+import discord
+from bot_logic import *
+# La variable intents almacena los privilegios del bot
+intents = discord.Intents.default()
+# Activar el privilegio de lectura de mensajes
+intents.message_content = True
+# Crear un bot en la variable cliente y transferirle los privilegios
+client = discord.Client(intents=intents)
 
-def gen_pass(pass_length):
-    elements = "+-/*!&$#?=@<hufejsoi8239r7ualwpknpq>"
-    password = ""
-    for i in range(pass_length):
-        password += random.choice(elements)
-    return password
+@client.event
+async def on_ready():
+    print(f'Hemos iniciado sesión como {client.user}')
 
-def ping():
-    return ('pong')
-
-def money():
-    for i in range(2):
-        g = random.randint(0,2)
-        if g == 0:
-            return ('cara')
-        elif g == 1:
-            return ('cruz')
-        else:
-            return ('empate')
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    if message.content.startswith('!hello'):
+        await message.channel.send("Hi!")
+    elif message.content.startswith('!ping'):
+        await message.channel.send(ping())
+    elif message.content.startswith('!pass'):
+        await message.channel.send(gen_pass(10))
+    elif message.content.startswith('!mone'):
+        await message.channel.send(money())
+    elif message.content.startswith('!help'):
+        await message.channel.send(help())
+    elif message.content.startswith('!trivia'):
+        await message.channel.send(quiz())
+    else:
+        await message.channel.send(message.content)
+client.run("token")
